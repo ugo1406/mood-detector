@@ -1,45 +1,43 @@
-from flask import Flask, render_template, request, url_for
-from transformers import pipeline
-from PIL import Image
-import io, os
+import os
+from flask import Flask, request, jsonify
+from model import EmotionModel  # import your Hugging Face model
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'static/uploads'
 
-# Create upload folder if it doesn't exist
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+# Lazy load
+emotion_model = None
 
-# Load pretrained emotion detection model
-emotion_model = pipeline("image-classification", model="mo-thecreator/vit-Facial-Expression-Recognition")
+def get_emotion_model():
+    global emotion_model
+    if emotion_model is None:
+        emotion_model = EmotionModel()  # load on first request
+        print("EmotionModel loaded!")
+    return emotion_model
 
-
-@app.route('/', methods=['GET', 'POST'])
+# -----------------------
+# Routes
+# -----------------------
+@app.route('/')
 def home():
-    prediction_label = None
-    image_path = None
+    return "Mood Detector is running!"
 
-    if request.method == 'POST':
-        if 'image' not in request.files:
-            return render_template('index.html', prediction=None, image_path=None)
+@app.route('/predict', methods=['POST'])
+def predict():
+    data = request.files.get("image")  # Expecting an image file
+    if data is None:
+        return jsonify({"error": "No image provided"}), 400
 
-        file = request.files['image']
-        if file.filename == '':
-            return render_template('index.html', prediction=None, image_path=None)
+    from PIL import Image
+    pil_image = Image.open(data)
 
-        # Save uploaded image
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(image_path)
+    model_instance = get_emotion_model()  # lazy load
+    prediction = model_instance.predict(pil_image)
 
-        # Predict emotion
-        image = Image.open(image_path)
-        preds = emotion_model(image)
-        prediction_label = preds[0]['label']
+    return jsonify(prediction)
 
-        # Pass relative path to template
-        image_path = url_for('static', filename=f'uploads/{file.filename}')
-
-    return render_template('index.html', prediction=prediction_label, image_path=image_path)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
+# -----------------------
+# Run app on Render port
+# -----------------------
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
