@@ -1,13 +1,14 @@
 import os
-from flask import Flask, request, jsonify, render_template
-
-from model import EmotionModel  # import your Hugging Face model
+from flask import Flask, request, render_template
+from model import EmotionModel  # your pretrained Hugging Face model
+from PIL import Image
 
 app = Flask(__name__)
 
-# Lazy load
+# -------------------
+# Lazy load model
+# -------------------
 emotion_model = None
-
 def get_emotion_model():
     global emotion_model
     if emotion_model is None:
@@ -15,33 +16,32 @@ def get_emotion_model():
         print("EmotionModel loaded!")
     return emotion_model
 
-# -----------------------
+# -------------------
 # Routes
-# -----------------------
-@app.route('/')
+# -------------------
+@app.route('/', methods=['GET'])
 def home():
-    # Serve your front-end HTML page
     return render_template('index.html')
-
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.files.get("image")  # Expecting an image file
-    if data is None:
-        return jsonify({"error": "No image provided"}), 400
-    from PIL import Image
+    file = request.files.get("image")
+    if file is None:
+        return render_template("index.html", prediction="No image provided")
 
-    pil_image = Image.open(data)
-    pil_image = pil_image.resize((224, 224))
+    # Preprocess image
+    pil_image = Image.open(file).resize((224, 224))
 
-    model_instance = get_emotion_model()  # lazy load
+    # Predict
+    model_instance = get_emotion_model()
     prediction = model_instance.predict(pil_image)
 
-    return jsonify(prediction)
+    # Render result on the same page
+    return render_template("index.html", prediction=prediction)
 
-# -----------------------
-# Run app on Render port
-# -----------------------
+# -------------------
+# Run on Render port
+# -------------------
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
