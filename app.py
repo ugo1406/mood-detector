@@ -1,5 +1,6 @@
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
+
 from model import EmotionModel  # import your Hugging Face model
 
 app = Flask(__name__)
