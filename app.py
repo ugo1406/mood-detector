@@ -26,9 +26,10 @@ def predict():
     data = request.files.get("image")  # Expecting an image file
     if data is None:
         return jsonify({"error": "No image provided"}), 400
-
     from PIL import Image
+
     pil_image = Image.open(data)
+    pil_image = pil_image.resize((224, 224))
 
     model_instance = get_emotion_model()  # lazy load
     prediction = model_instance.predict(pil_image)
