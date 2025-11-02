@@ -1,0 +1,19 @@
+# Ignore Python cache and environment files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environment folders
+venv/
+.venv/
+
+# IDE settings
+.idea/
+.vscode/
+
+# System files
+.DS_Store
+
+# Streamlit or Flask logs
+*.log
