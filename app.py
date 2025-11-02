@@ -19,7 +19,9 @@ def get_emotion_model():
 # -----------------------
 @app.route('/')
 def home():
-    return "Mood Detector is running!"
+    # Serve your front-end HTML page
+    return render_template('index.html')
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
