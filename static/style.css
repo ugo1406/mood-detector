@@ -1,0 +1,57 @@
+/* General page styling */
+body {
+    font-family: 'Arial', sans-serif;
+    text-align: center;
+    margin: 50px;
+    background: #f8f9fa;
+    color: #333;
+}
+
+/* Page title */
+h1 {
+    color: #ffcc00; /* DonateDrive yellow vibe */
+    text-shadow: 1px 1px 2px #555;
+}
+
+/* Form styling */
+form {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+/* File input */
+input[type="file"] {
+    margin-bottom: 15px;
+}
+
+/* Button styling */
+button {
+    background-color: #333;
+    color: #ffcc00;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+button:hover {
+    background-color: #555;
+}
+
+/* Prediction output */
+h2 {
+    margin-top: 20px;
+    color: #0066cc;
+}
+
+/* Uploaded image styling */
+img {
+    margin-top: 15px;
+    border-radius: 10px;
+    border: 2px solid #ccc;
+}
